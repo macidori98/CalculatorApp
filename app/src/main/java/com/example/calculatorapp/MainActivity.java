@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvHistory, tvResult;
     private String number = null, status = "";
     private double firstNumber, lastNumber;
-    private boolean operator = false, dot = true, acControl = true;
+    private boolean operator = false, dot = true, acControl = true, equalControl = false;
 
     private final DecimalFormat myFormatter = new DecimalFormat("######.######");
 
@@ -183,6 +183,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             operator = false;
+            equalControl = true;
         });
 
         btnDiv.setOnClickListener(v -> {
@@ -245,11 +246,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (number.length() == 0) {
                     btnDel.setEnabled(false);
-                } else if (number.contains(".")){
-                    dot = false;
-                } else {
-                    dot = true;
-                }
+                } else dot = !number.contains(".");
 
                 tvResult.setText(number);
             }
@@ -259,6 +256,10 @@ public class MainActivity extends AppCompatActivity {
     private void numberClick(String view) {
         if (number == null) {
             number = view;
+        } else if (equalControl) {
+            firstNumber = 0;
+            lastNumber = 0;
+            number = view;
         } else {
             number = number.concat(view);
         }
@@ -267,6 +268,7 @@ public class MainActivity extends AppCompatActivity {
         operator = true;
         acControl= false;
         btnDel.setEnabled(true);
+        equalControl = false;
     }
 
     private void addition() {
