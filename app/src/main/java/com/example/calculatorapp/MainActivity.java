@@ -1,7 +1,6 @@
 package com.example.calculatorapp;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -16,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvHistory, tvResult;
     private String number = null, status = "";
     private double firstNumber, lastNumber;
-    private boolean operator = false;
+    private boolean operator = false, dot = true, acControl = true;
 
     private final DecimalFormat myFormatter = new DecimalFormat("######.######");
 
@@ -220,22 +219,40 @@ public class MainActivity extends AppCompatActivity {
             tvHistory.setText("");
             lastNumber = 0;
             firstNumber = 0;
+            dot = false;
+            acControl = true;
         });
 
         btnDot.setOnClickListener(v -> {
-            if (number == null) {
-                number = "0.";
-            } else {
-                number = number.concat(".");
+            if (dot) {
+                if (number == null) {
+                    number = "0.";
+                } else {
+                    number = number.concat(".");
+                }
             }
 
+            dot = false;
             tvResult.setText(number);
         });
 
         btnDel.setOnClickListener(v -> {
-            number = tvResult.getText().toString();
-            number = number.substring(0, number.length()-1);
-            tvResult.setText(number);
+            if (acControl) {
+                tvResult.setText("0");
+            } else {
+                number = tvResult.getText().toString();
+                number = number.substring(0, number.length()-1);
+
+                if (number.length() == 0) {
+                    btnDel.setEnabled(false);
+                } else if (number.contains(".")){
+                    dot = false;
+                } else {
+                    dot = true;
+                }
+
+                tvResult.setText(number);
+            }
         });
     }
 
@@ -248,15 +265,21 @@ public class MainActivity extends AppCompatActivity {
 
         tvResult.setText(number);
         operator = true;
+        acControl= false;
+        btnDel.setEnabled(true);
     }
 
     private void addition() {
+        dot = true;
+
         lastNumber = Double.parseDouble(tvResult.getText().toString());
         firstNumber = firstNumber + lastNumber;
         resultDisplayOnScreen();
     }
 
     private void minus() {
+        dot = true;
+
         if (firstNumber == 0) {
             firstNumber = Double.parseDouble(tvResult.getText().toString());
         } else {
@@ -268,6 +291,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void multiply() {
+        dot = true;
+
         if (firstNumber == 0) {
             firstNumber = 1;
         }
@@ -279,6 +304,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void divide() {
+        dot = true;
+
         lastNumber = Double.parseDouble(tvResult.getText().toString());
 
         if (firstNumber == 0) {
